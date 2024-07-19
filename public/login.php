@@ -1,25 +1,35 @@
 <?php
-require_once '../config/db.php';
-if ($_SERVER['REQUEST_METHOD'] == 'POST') {
-$email = $_POST['email'];
-$password = $_POST['password'];
-$stmt = $conn->prepare("SELECT id, password FROM users WHERE email =
-?");
-$stmt->bind_param("s", $email);
-$stmt->execute();
-$stmt->store_result();
-if ($stmt->num_rows > 0) {
-$stmt->bind_result($id, $hashed_password);
-$stmt->fetch();
-if (password_verify($password, $hashed_password)) {
+
 session_start();
-$_SESSION['user_id'] = $id;
-echo "Login successful!";
-} else {
-echo "Invalid password!";
-}
-} else {
-    echo "No user found with that email address!";
-    }
-    $stmt->close();
-    $conn->close();
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Login - Library Management System</title>
+    <link rel="stylesheet" type="text/css" href="css/style.css">
+</head>
+<body class="centered">
+    <div class="form-container">
+        <h2>Login</h2>
+
+        <form method="POST" action="process_login.php">
+            <label for="loginEmail">Email:</label>
+            <input type="email" id="loginEmail" name="email" required><br>
+            <label for="loginPassword">Password:</label>
+            <input type="password" id="loginPassword" name="password" required><br>
+            <button type="submit">Login</button>
+        </form>
+        <div id="loginMessage">
+
+            <?php
+            if (isset($_SESSION['message'])) {
+                echo $_SESSION['message'];
+                unset($_SESSION['message']);
+            }
+            ?>
+        </div>
+    </div>
+</body>
+</html>
+
